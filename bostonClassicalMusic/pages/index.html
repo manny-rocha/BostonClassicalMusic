@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A description of your website">
+  <meta name="robots" content="index,follow">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self';">
+  <meta name="referrer" content="no-referrer-when-downgrade">
+  <meta http-equiv="Feature-Policy" content="accelerometer 'none'; camera 'none'; geolocation 'none';">
+  <title>Boston Classical Music</title>
+
+  <script>
+    async function fetchRSS() {
+      const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+      const rssUrl = 'https://www.classical-scene.com/?feed=gigpress';
+
+      try {
+        const response = await fetch(proxyUrl + rssUrl);
+        const xml = await response.text();
+        console.log(xml);
+      } catch (error) {
+        console.error('fetchRSS failed:', error);
+      }
+    }
+  </script>
+</head>
+<body>
+  
+</body>
+</html>
