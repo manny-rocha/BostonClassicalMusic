@@ -1,40 +1,14 @@
-const axios = require("axios");
-const xml2js = require("xml2js");
-const fs = require("fs");
+var xml = document.implementation.createDocument("", "", null);
+xml.async = false;
+xml.load("./rss.xml");
 
-// module.exports = {
-//     async function main() {
-//     // Retrieve the RSS feed
-//     const response = await axios.get("https://www.classical-scene.com/?feed=gigpress");
-//     const xml = response.data;
+var xsl = document.implementation.createDocument("", "", null);
+xsl.async = false;
+xsl.load("../styles/stylesheet.xsl");
 
-//     // Convert the XML data to JSON
-//     const parser = new xml2js.Parser();
-//     const json = await parser.parseStringPromise(xml);
+var xsltProcessor = new XSLTProcessor();
+xsltProcessor.importStylesheet(xsl);
 
-//     // Write the JSON data to an XML file
-//     const builder = new xml2js.Builder();
-//     const xmlData = builder.buildObject(json);
-//     fs.writeFileSync("rss-feed.xml", xmlData);
+var resultDocument = xsltProcessor.transformToFragment(xml, document);
+document.body.appendChild(resultDocument);
 
-//     console.log("RSS feed has been downloaded to rss-feed.xml");
-//     }
-// };
-module.exports = {
-    
-    async main() {
-        return axios.get(url)
-          .then(response => {
-            const rss = response.data;
-            const parser = new xml2js.Parser();
-            return new Promise((resolve, reject) => {
-              parser.parseString(rss, (err, result) => {
-                if (err) reject(err);
-                const xml = new xml2js.Builder().buildObject(result);
-                fs.writeFileSync(fileName, xml, "utf-8");
-                resolve();
-              });
-            });
-          });
-      } 
-};

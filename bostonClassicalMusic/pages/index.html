@@ -3,57 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="A description of your website">
-  <meta name="robots" content="index,follow">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self';">
-  <meta name="referrer" content="no-referrer-when-downgrade">
-  <meta http-equiv="Feature-Policy" content="accelerometer 'none'; camera 'none'; geolocation 'none';">
   <style rel="stylesheet" src="../styles/styles.css"></style>
   <title>Boston Classical Music</title>
-
-  <script>
-    async function fetchRSS() {
-      const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-      const rssUrl = 'https://www.classical-scene.com/?feed=gigpress';
-
-      try {
-        const response = await fetch(proxyUrl + rssUrl);
-        const xml = await response.text();
-
-        const saveResponse = await fetch('/save-rss', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/xml'
-          },
-          body: xml
-        });
-
-        if (!saveResponse.ok) {
-          throw new Error('Failed to save RSS');
-        }
-      } catch (error) {
-        console.error('fetchRSS failed:', error);
-      }
-    }
-
-    function convertXMLToHTML(xml) {
-      let html = '';
-
-      html += '<html><head><title>Boston Classical Music</title></head><body>';
-      html += '<h1>' + BCM + '</h1>';
-      html += '<ul>';
-
-      xml.rss.atom[0].item.forEach(function(item) {
-        html += '<li><a href="' + item.link + '">' + item.title + '</a></li>';
-      });
-
-      html += '</ul></body></html>';
-
-      return html;
-    }
-  </script>
-</head>
-<body>
   
+  <script type="text/javascript">
+    var xml = document.implementation.createDocument("", "", null);
+    xml.async = false;
+    xml.load("../app/rss.xml");
+    
+    var xsl = document.implementation.createDocument("", "", null);
+    xsl.async = false;
+    xsl.load("../styles/stylesheet.xsl");
+    
+    var xsltProcessor = new XSLTProcessor();
+    xsltProcessor.importStylesheet(xsl);
+    
+    var resultDocument = xsltProcessor.transformToFragment(xml, document);
+    document.body.appendChild(resultDocument);
+  </script>
+  
+</head>
+
+<body>
+
+ 
 </body>
+
 </html>
