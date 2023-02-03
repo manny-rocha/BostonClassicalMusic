@@ -1,27 +1,35 @@
-<table>
-  <thead>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Gigs</title>
+</head>
+<body>
+  <table>
     <tr>
+      <th>Artist</th>
       <th>Date</th>
       <th>Time</th>
-      <th>Venue</th>
       <th>City</th>
-      <th>State</th>
-      <th>Country</th>
-      <th>Link</th>
+      <th>Venue</th>
+      <th>Address</th>
+      <th>Tickets</th>
+      <th>Description</th>
+      <th>Calendar</th>
     </tr>
-  </thead>
-  <tbody>
-    <% console.log(gigs); %>
-    <% gigs.forEach(gig => { %>
-    <tr>
-      <td><%= gig.date %></td>
-      <td><%= gig.time %></td>
-      <td><%= gig.venue %></td>
-      <td><%= gig.city %></td>
-      <td><%= gig.state %></td>
-      <td><%= gig.country %></td>
-      <td><%= gig.link %></td>
-    </tr>
-    <% }); %>
-  </tbody>
-</table>
+    
+    <% for (var i = 0; i < gigs.length; i++) { %>
+      <tr>
+        <td><%= gigs[i].artist %></td>
+        <td><%= gigs[i].date %></td>
+        <td><%= gigs[i].time %></td>
+        <td><%= gigs[i].city %></td>
+        <td><%= gigs[i].venue %></td>
+        <td><%= gigs[i].address %></td>
+        <td><%= gigs[i].tickets %></td>
+        <td><%= gigs[i].description %></td>
+        <td><%= gigs[i].calendar %></td>
+      </tr>
+    <% } %>    
+  </table>  
+</body>
+</html>
