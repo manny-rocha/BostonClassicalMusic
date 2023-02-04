@@ -4,129 +4,117 @@ const express = require('express');
 const path = require('path');
 const fetch = require('isomorphic-unfetch')
 const app = express();
-
+const axios = require('axios');
+app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-app.set('views', './views');
-const url = 'https://www.classical-scene.com/?feed=gigpress';
-const dbFile = 'gigs.db';
-const dbPath = path.join(__dirname, dbFile);
-let db;
 
-// const db = new sqlite3.Database('gigs.db');
-function loadData() {
-  // Connect to the database.
-  db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
+
+function capitalize(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
+
+
+const db = new sqlite3.Database('./events.db', (err) => {
+  if (err) {
+    console.error(err.message);
+  } else {
+    console.log('Connected to the events database.');
+  }
+});
+
+const createTable = () => {
+  const sql = `CREATE TABLE IF NOT EXISTS events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    date TEXT NOT NULL,
+    time TEXT NOT NULL,
+    city TEXT NOT NULL,
+    add TEXT NOT NULL,
+    presenter TEXT NOT NULL,
+    performer TEXT NOT NULL,
+    location TEXT NOT NULL,
+    tickets TEXT NOT NULL,
+    notes TEXT NOT NULL,
+    details TEXT NOT NULL
+  )`;
+
+  db.run(sql, (err) => {
     if (err) {
       console.error(err.message);
     } else {
-      console.log(`Connected to the ${dbFile} database.`);
+      console.log('Events table created successfully.');
     }
   });
-  
+};
 
-  // Create the gigs table if it does not exist.
-  const createTableSQL = `
-    CREATE TABLE IF NOT EXISTS gigs (
-      id INTEGER PRIMARY KEY,
-      artist TEXT,
-      date TEXT,
-      time TEXT,
-      city TEXT,
-      venue TEXT,
-      address TEXT,
-      tickets TEXT,
-      description TEXT,
-      gcalendar TEXT,
-      hyperlink TEXT
-    );
-  `;
-  db.run(createTableSQL, (err) => {
-    if (err) {
-      console.error(err.message);
-    } else {
-      console.log(`Table created successfully.`);
-    }
-  });
 
-  // Make a GET request to the URL.
+const loadData = async () => {
   try {
-    fetch(url)
-      .then((response) => response.text())
-      .then(text => {
-        let cleaned = text.replace(/<!\[CDATA\[|\]\]>/g, '');
-        return cleaned;
-      })
-      .then((xml) => {
-        const $ = cheerio.load(xml, {
-          xmlMode: true,
-        })
-        $('item').each((i, element) => {
-          const ul = $(element).find('gigprress_ul');
-          $(element).find('ul').each((i, ul) => {
-            const columns = ['artist', 'date', 'time', 'city', 'venue', 'address', 'tickets', 'description', 'gcalendar', 'hyperlink']; // add the hyperlink to the columns array
-            let j = 0;
-            $(ul).find('li').each((i, li) => {
-              const text = $(li).text();
-              console.log(`ul: ${ul} li: ${text}`);
-        
-              if (j >= columns.length) {
-                j = 0;
-              }
-        
-              // Add the hyperlink information to the object being stored in the gigs array
-              const hyperlink = $(li).find('a').attr('href');
-        
-              db.run(`INSERT INTO gigs (${columns[j]})
-                      VALUES (?)`,
-                [text],
-                function (err) {
-                  if (err) {
-                    console.log(err);
-                  }
-                });
-        
-              j++;
-            });
-          });
-        });
-        
-      }) 
-  } 
-      catch (err) {
-        console.log(err);
+    const response = await axios.get('https://www.classical-scene.com/calendar/');
+    const html = response.data;
+    const cheerio = require('cheerio');
+    const $ = cheerio.load(html);
+
+    const events = [];
+    $('.event-1, .event0').each(function () {
+        const date = $(this).find('.date').text();
+        const time = $(this).find('.time').text();
+        const city = $(this).find('.city').text();
+        const venue = $(this).find('.add').text();
+        const artist = $(this).find('.performer').text();
+        const address = $(this).find('.gigpress-address').text();
+        const tickets = $(this).find('li:nth-child(4)').text();
+        const description = $(this).find('.notes').text();
+        const hyperlink = $(this).find('p').text();
+
+        events.push({ artist, date, time, city, venue, address, tickets, description, hyperlink });
+    });
+    console.log(events);
+    return events;
+
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+};
+
+
+const insertData = (events) => {
+  for (let i = 0; i < events.length; i++) {
+    const gig = events[i];
+    const sql = 'INSERT INTO events (artist, date, time, city, venue, address, tickets, description, hyperlink) VALUES (?,?,?,?,?,?,?,?,?)';
+    db.run(sql, [gig.artist, gig.date, gig.time, gig.city, gig.venue, gig.address, gig.tickets, gig.description, gig.hyperlink], (err) => {
+      if (err) {
+      console.error(err.message);
+      } else {
+      console.log(`Gig data inserted successfully.`);
       }
-}
+    });
+  }
+};
 
-loadData();
+const loadDataAndInsert = async () => {
+  createTable();
+  try {
+    const events = await loadData();
+    insertData(events);
+  } catch (error) {
+    console.error(error);
+  }
+};
 
+loadDataAndInsert();
 
 app.get('/', (req, res) => {
-  // Could change the LIMIT clause to be a variable with a dropdown box, or a load-as-you-scroll situation
-  db.all("SELECT * FROM gigs LIMIT 100", (err, rows) => {
+  db.all('SELECT * FROM events', (err, rows) => {
     if (err) {
       console.error(err.message);
-    }
-    if (rows) {
-      const gigs = rows.map(row => {
-        return {
-          artist: row.artist,
-          date: row.date,
-          time: row.time,
-          city: row.city,
-          venue: row.venue,
-          address: row.address,
-          tickets: row.tickets,
-          description: row.description,
-          gcalendar: row.gcalendar,
-          hyperlink: row.hyperlink,
-        };
-      });
-      res.render('index', { gigs: gigs });
     } else {
-      console.error("No rows returned from the database");
+      res.render('index', { events: rows });
     }
   });
 });
+
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {

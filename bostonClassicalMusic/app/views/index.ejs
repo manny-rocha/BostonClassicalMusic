@@ -1,35 +1,43 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Gigs</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Boston Classical Music Calendar</title>
 </head>
 <body>
   <table>
-    <tr>
-      <th>Artist</th>
-      <th>Date</th>
-      <th>Time</th>
-      <th>City</th>
-      <th>Venue</th>
-      <th>Address</th>
-      <th>Tickets</th>
-      <th>Description</th>
-      <th>Calendar</th>
-    </tr>
-    
-    <% for (var i = 0; i < gigs.length; i++) { %>
+    <thead>
       <tr>
-        <td><%= gigs[i].artist %></td>
-        <td><%= gigs[i].date %></td>
-        <td><%= gigs[i].time %></td>
-        <td><%= gigs[i].city %></td>
-        <td><%= gigs[i].venue %></td>
-        <td><%= gigs[i].address %></td>
-        <td><%= gigs[i].tickets %></td>
-        <td><%= gigs[i].description %></td>
-        <td><%= gigs[i].calendar %></td>
+        <th>Artist</th>
+        <th>Date</th>
+        <th>Time</th>
+        <th>City</th>
+        <th>Venue</th>
+        <th>Address</th>
+        <th>Tickets</th>
+        <th>Description</th>
+        <th>Calendar</th>
+        <th>Link</th>
       </tr>
-    <% } %>    
-  </table>  
+    </thead>
+    <tbody>
+      <% events.forEach((gig) => { %>
+        <tr>
+          <td><%= gig.artist %></td>
+          <td><%= gig.date %></td>
+          <td><%= gig.time %></td>
+          <td><%= gig.city %></td>
+          <td><%= gig.venue %></td>
+          <td><%= gig.address %></td>
+          <td><%= gig.tickets %></td>
+          <td><%= gig.description %></td>
+          <td><%= gig.calendar %></td>
+          <td><%= gig.hyperlink %></td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
 </body>
 </html>
