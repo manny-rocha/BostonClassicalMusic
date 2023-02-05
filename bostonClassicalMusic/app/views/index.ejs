@@ -16,7 +16,9 @@
         <th>City</th>
         <th>Venue</th>
         <th>Address</th>
+        <th>Location</th>
         <th>Tickets</th>
+        <th>Ticket Link</th>
         <th>Description</th>
         <th>Calendar</th>
         <th>Link</th>
@@ -31,7 +33,9 @@
           <td><%= gig.city %></td>
           <td><%= gig.venue %></td>
           <td><%= gig.address %></td>
+          <td><a href="<%= gig.locationHref %>"><%= gig.address %></a></td>
           <td><%= gig.tickets %></td>
+          <td><a href="<%= gig.ticketHref %>">here</a></td>
           <td><%= gig.description %></td>
           <td><%= gig.calendar %></td>
           <td><%= gig.hyperlink %></td>
