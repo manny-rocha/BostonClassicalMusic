@@ -6,7 +6,7 @@ const fetch = require('isomorphic-unfetch')
 const app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-app.use('/', express.static('public'));
+app.use(express.static('public/assets', { extensions: ['css'] }));
 
 const db = new sqlite3.Database('./events.db', (err) => {
   if (err) {
@@ -113,8 +113,22 @@ app.get('/', (req, res) => {
     });
   };
   runDbOperations();
-});  
+}); 
 
+app.get('/search', (req, res) => {
+  const { q } = req.query;
+  
+  const runDbOperations = () => {
+    db.all('SELECT * FROM events WHERE performer LIKE '%${q}%' OR notes LIKE '%${q}%'', (err, rows) => {
+    if (err) {
+      return res.status(500).send('An error occurred while searching the database');
+    } else {
+      res.send(rows);
+    }
+    });
+    };
+  runDbOperations();
+  });
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {

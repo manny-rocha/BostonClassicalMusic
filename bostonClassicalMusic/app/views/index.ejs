@@ -4,11 +4,139 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href= "./public/assets/styles.css" rel="stylesheet" type="text/css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand&display=swap" rel="stylesheet">
   <title>Boston Classical Music Calendar</title>
+  <style>
+    
+    * {
+      font-family: 'Quicksand', sans-serif;
+    }
+
+    body {
+      display: flex;
+      justify-content: left;
+    }
+    
+    form#search-form {
+      position: absolute;
+      border-radius: inherit;
+    }
+
+    .content-table {
+      border-collapse: collapse;
+      margin: 25px 0;
+      font-size: 0.9em;
+      min-width: 400px;
+      border-radius: 5px 5px 0 0;
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    }
+    .content-table thead tr {
+      background-color: #009879;
+      color: #ffffff;
+      text-align: left;
+      font-weight: bold;
+    }
+
+    .content-table th,
+    .content-table td {
+      padding: 12px 15px;
+    }
+
+    .content-table tbody tr {
+      border-bottom: 1px solid #dddddd;
+    }
+
+    .content-table tbody tr:nth-of-type(even) {
+      background-color: #f3f3f3;
+    }
+
+    .search-table {
+      display: none;
+      border-collapse: collapse;
+      margin: 25px 0;
+      font-size: 0.9em;
+      min-width: 400px;
+      border-radius: 5px 5px 0 0;
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .search-table thead tr {
+      background-color: #009879;
+      color: #ffffff;
+      text-align: left;
+      font-weight: bold;
+    }
+
+    .search-table th,
+    .search-table td {
+      padding: 12px 15px;
+    }
+
+    .search-table tbody tr {
+      border-bottom: 1px solid #dddddd;
+    }
+
+    .search-table tbody tr:nth-of-type(even) {
+      background-color: #f3f3f3;
+    }
+  </style>
+  <script>
+          window.onload = function() {
+            const form = document.getElementById('search-form');
+            const input = document.getElementById('search-input');
+            
+            form.addEventListener('submit', (event) => {
+              event.preventDefault();
+              
+              const searchTerm = input.value;
+              
+              fetch(`/search?q=${searchTerm}`)
+                .then(response => response.json())
+                .then(data => {
+                  // Clear any previous search results
+                  document.getElementById('table-body').innerHTML = '';
+                  
+                  // Display the search results
+                  data.forEach(gig => {
+                    const result = document.createElement('tr');
+                    result.innerHTML = `
+                      <td>${gig.performer}</td>
+                      <td>${gig.date}</td>
+                      <td>${gig.time}</td>
+                      <td>${gig.city}</td>
+                      <td class="notes">${gig.notes}</td>          
+                      <td class="short"><a href="${gig.location}">Location</a></td>
+                      <td class="short"><a href="${gig.ticketLink}"></a>Tickets</td>
+                      <td class="short"><a href="${gig.gCalendar}"></a>Google Cal</td>
+                    `;
+                    document.getElementById('table-body').appendChild(result);
+                  });
+              });
+          });
+      };
+
+      // document.addEventListener("DOMContentLoaded", function() {
+      //   var searchTable = document.querySelector('.search-table');
+      //   if (searchTable) {
+      //     searchTable.style.display = 'block';
+      //   }
+      // });
+
+
+  </script>
 </head>
 <body>
-  <table>
+  <header>
+    <form id="search-form">
+      <input action="/search" type="text" id="search-input" placeholder="Keyword Search" autocomplete="off" autofocus>
+      <button type="submit">Search</button>
+    </form>    
+  </header>
+  <table class="content-table">
     <thead>
       <tr>
         <th>Performer</th>
@@ -21,20 +149,37 @@
         <th>Calendar</th>
       </tr>
     </thead>
-    <tbody>
+    <tbody class="table-body">
       <% events.forEach((gig) => { %>
-        <tr>
+        <tr class="body-row">
           <td><%= gig.performer %></td>
           <td><%= gig.date %></td>
-          <td><%= gig.time %></td>
-          <td><%= gig.city %></td>
-          <td><%= gig.notes %></td>
-          <td><a href="<%= gig.location %>">Location</a></td>
-          <td><a href="<%= gig.ticketLink %>"></a>Tickets</td>
-          <td><a href="<%= gig.gCalendar %>"></a>Google Cal</td>
+          <td class="short"><%= gig.time %></td>
+          <td class="short"><%= gig.city %></td>
+          <td class="notes"><%= gig.notes %></td>          
+          <td class="short"><a href="<%= gig.location %>">Location</a></td>
+          <td class="short"><a href="<%= gig.ticketLink %>"></a>Tickets</td>
+          <td class="short"><a href="<%= gig.gCalendar %>"></a>Google Cal</td>
         </tr>
       <% }); %>
     </tbody>
   </table>
+  <table class="search-table">
+    <thead>
+      <tr>
+        <th>Performer</th>
+        <th>Date</th>
+        <th>Time</th>
+        <th>City</th>
+        <th>Notes</th>
+        <th>Tickets</th>
+        <th>Location</th>
+        <th>Calendar</th>
+      </tr>
+    </thead>
+    <tbody id="search-results">
+    </tbody>
+  </table>
+  
 </body>
 </html>
