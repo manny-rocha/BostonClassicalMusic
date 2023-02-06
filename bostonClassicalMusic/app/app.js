@@ -4,16 +4,9 @@ const express = require('express');
 const path = require('path');
 const fetch = require('isomorphic-unfetch')
 const app = express();
-const axios = require('axios');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-
-
-function capitalize(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-};
-
-
+app.use('/', express.static('public'));
 
 const db = new sqlite3.Database('./events.db', (err) => {
   if (err) {
@@ -29,12 +22,11 @@ const createTable = () => {
     date TEXT NOT NULL,
     time TEXT NOT NULL,
     city TEXT NOT NULL,
-    presenter TEXT NOT NULL,
     performer TEXT NOT NULL,
     location TEXT NOT NULL,
     tickets TEXT,
     notes TEXT NOT NULL,
-    gcalendar TEXT NOT NULL
+    gcalendar TEXT
   )`;
 
   db.run(sql, (err) => {
@@ -45,7 +37,6 @@ const createTable = () => {
     }
   });
 };
-
 
 const scrapeData = async () => {
   try {
@@ -59,13 +50,19 @@ const scrapeData = async () => {
       event.date = $(el).find('.date').text();
       event.time = $(el).find('.time').text();
       event.city = $(el).find('.city').text().replace('in ', '');
-      event.location = $(el).find('.gigpress-address').text();
+      event.location = $(el).find('.gigpress-address').attr('href');
       event.performer = $(el).find('.performer').text();
-      event.presenter = $(el).find('.presenter a').text();
-      event.ticketLink = $(el).find('.right-c li:last-child').attr('href');
+      
+      $(el).find("ul.right-c").each((j, li) => {
+        const text = $(li).text();
+        if (text.includes("Tickets:")) {
+          event.ticketLink = $(li).find("a").attr("href");
+        }
+      });
+      
       event.notes = $(el).find('p').text();
-      event.gCalendar = $(el).find('.add a:first-child').attr('href');
-
+      event.gCalendar = $(el).find('.add').attr('href');
+    
       events.push(event);
     });
 
@@ -82,8 +79,8 @@ const scrapeData = async () => {
 const insertData = (events) => {
   for (let i = 0; i < events.length; i++) {
     const gig = events[i];
-    const sql = 'INSERT INTO events (performer, presenter, date, time, city, location, tickets, notes, gcalendar) VALUES (?,?,?,?,?,?,?,?,?)';
-    db.run(sql, [gig.performer, gig.presenter, gig.date, gig.time, gig.city, gig.location, gig.ticketLink, gig.notes, gig.gCalendar], (err) => {
+    const sql = 'INSERT INTO events (performer, date, time, city, location, tickets, notes, gcalendar) VALUES (?,?,?,?,?,?,?,?)';
+    db.run(sql, [gig.performer, gig.date, gig.time, gig.city, gig.location, gig.ticketLink, gig.notes, gig.gCalendar], (err) => {
       if (err) {
       console.error(err.message);
       } else {
@@ -106,14 +103,17 @@ const scrapeDataAndInsert = async () => {
 scrapeDataAndInsert();
 
 app.get('/', (req, res) => {
-  db.all('SELECT * FROM events', (err, rows) => {
-    if (err) {
-      console.error(err.message);
-    } else {
-      res.render('index', { events: rows });
-    }
-  });
-});
+  const runDbOperations = () => {
+    db.all('SELECT * FROM events', (err, rows) => {
+      if (err) {
+        console.error(err.message);
+      } else {
+        res.render('index', { events: rows });
+      }
+    });
+  };
+  runDbOperations();
+});  
 
 
 const port = process.env.PORT || 3000;

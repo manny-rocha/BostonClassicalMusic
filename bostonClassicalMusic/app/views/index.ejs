@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href= "./public/assets/styles.css" rel="stylesheet" type="text/css"/>
   <title>Boston Classical Music Calendar</title>
 </head>
 <body>
@@ -14,9 +15,9 @@
         <th>Date</th>
         <th>Time</th>
         <th>City</th>
-        <th>Location</th>
-        <th>Tickets</th>
         <th>Notes</th>
+        <th>Tickets</th>
+        <th>Location</th>
         <th>Calendar</th>
       </tr>
     </thead>
@@ -27,11 +28,10 @@
           <td><%= gig.date %></td>
           <td><%= gig.time %></td>
           <td><%= gig.city %></td>
-          <td><%= gig.location %></td>
-          <td><a href="<%= gig.location %>"></a></td>
-          <td><a href="<%= gig.ticketlink %>"></a></td>
           <td><%= gig.notes %></td>
-          <td><a href="<%= gig.gCalendar %>"></a></td>
+          <td><a href="<%= gig.location %>">Location</a></td>
+          <td><a href="<%= gig.ticketLink %>"></a>Tickets</td>
+          <td><a href="<%= gig.gCalendar %>"></a>Google Cal</td>
         </tr>
       <% }); %>
     </tbody>
