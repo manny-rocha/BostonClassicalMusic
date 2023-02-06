@@ -32,7 +32,7 @@ const createTable = () => {
     presenter TEXT NOT NULL,
     performer TEXT NOT NULL,
     location TEXT NOT NULL,
-    tickets TEXT NOT NULL,
+    tickets TEXT,
     notes TEXT NOT NULL,
     gcalendar TEXT NOT NULL
   )`;
@@ -62,8 +62,8 @@ const scrapeData = async () => {
       event.location = $(el).find('.gigpress-address').text();
       event.performer = $(el).find('.performer').text();
       event.presenter = $(el).find('.presenter a').text();
-      event.ticketLink = $(el).find('.right-c li:contains("Tickets:") a').attr('href');
-      event.notes = $(el).find('.notes p').text();
+      event.ticketLink = $(el).find('.right-c li:last-child').attr('href');
+      event.notes = $(el).find('p').text();
       event.gCalendar = $(el).find('.add a:first-child').attr('href');
 
       events.push(event);
