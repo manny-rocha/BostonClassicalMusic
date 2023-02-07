@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Quicksand&display=swap" rel="stylesheet">
-  <title>Boston Classical Music Calendar</title>
+  <title>Search | Boston Classical Music Calendar</title>
   <style>
     
     * {
@@ -18,20 +18,11 @@
       display: flex;
       justify-content: left;
     }
-
-    h1,
+    
     form#search-form {
       position: absolute;
       border-radius: inherit;
     }
-
-    h1 {
-      width: max-content;
-      left: 50vw;
-      top: 0px;
-      margin: 1px;
-    }
-
 
     .content-table {
       border-collapse: collapse;
@@ -62,38 +53,7 @@
       background-color: #f3f3f3;
     }
 
-    .search-table {
-      display: none;
-      border-collapse: collapse;
-      margin: 25px 0;
-      font-size: 0.9em;
-      min-width: 400px;
-      border-radius: 5px 5px 0 0;
-      overflow: hidden;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-    }
-
-    .search-table thead tr {
-      background-color: #009879;
-      color: #ffffff;
-      text-align: left;
-      font-weight: bold;
-    }
-
-    .search-table th,
-    .search-table td {
-      padding: 12px 15px;
-    }
-
-    .search-table tbody tr {
-      border-bottom: 1px solid #dddddd;
-    }
-
-    .search-table tbody tr:nth-of-type(even) {
-      background-color: #f3f3f3;
-    }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script>
           window.onload = function() {
             const form = document.getElementById('search-form');
@@ -107,12 +67,9 @@
   </script>
 </head>
 <body>
-  <div class="h1Div">
-    <h1>Boston Classical Music Calendar</h1>
-  </div>
   <header>
     <form id="search-form" action="/search">
-      <input type="text" name="q" id="search-input" placeholder="Keyword Search" autocomplete="off" autofocus>
+      <input type="text" id="search-input" placeholder="Keyword Search" autocomplete="off" autofocus>
       <button type="submit">Search</button>
     </form>    
   </header>
@@ -129,7 +86,7 @@
         <th>Calendar</th>
       </tr>
     </thead>
-    <tbody id="table-body">
+    <tbody class="table-body">
       <% events.forEach((gig) => { %>
         <tr class="body-row">
           <td><%= gig.performer %></td>
@@ -144,22 +101,5 @@
       <% }); %>
     </tbody>
   </table>
-  <table class="search-table">
-    <thead>
-      <tr>
-        <th>Performer</th>
-        <th>Date</th>
-        <th>Time</th>
-        <th>City</th>
-        <th>Notes</th>
-        <th>Tickets</th>
-        <th>Location</th>
-        <th>Calendar</th>
-      </tr>
-    </thead>
-    <tbody id="search-results">
-    </tbody>
-  </table>
-  
 </body>
 </html>
