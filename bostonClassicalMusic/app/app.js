@@ -51,16 +51,9 @@ const scrapeData = async () => {
       event.city = $(el).find('.city').text().replace('in ', '');
       event.location = $(el).find('.gigpress-address').attr('href');
       event.performer = $(el).find('.performer').text();
-      
-      $(el).find("ul.right-c").each((j, li) => {
-        const text = $(li).text();
-        if (text.includes("Tickets:")) {
-          event.ticketLink = $(li).find("a").attr("href");
-        }
-      });
-      
+      event.ticketLink = $(el).find("ul > li:nth-child(4) > a").attr("href");
       event.notes = $(el).find('p').text();
-      event.gCalendar = $(el).find('.add').attr('href');
+      event.gCalendar = $(el).find('div > span.add > a:nth-child(1)').attr('href');
     
       events.push(event);
     });
@@ -71,8 +64,6 @@ const scrapeData = async () => {
     return [];
   }
 };
-
-
 
 
 const insertData = (events) => {
