@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Quicksand&display=swap" rel="stylesheet">
-  <title>Boston Classical Music Calendar</title>
+  <title>Greater Boston Classical Music Calendar</title>
   <style>
     
     * {
@@ -32,6 +32,10 @@
       margin: 1px;
     }
 
+    #home {
+      text-decoration: none;
+      color: black;
+    }
 
     .content-table {
       border-collapse: collapse;
@@ -108,7 +112,7 @@
 </head>
 <body>
   <div class="h1Div">
-    <h1>Boston Classical Music Calendar</h1>
+    <h1><a id="home" action="/">Greater Boston Classical Music Calendar</a></h1>
   </div>
   <header>
     <form id="search-form" action="/search">
@@ -124,8 +128,8 @@
         <th>Time</th>
         <th>City</th>
         <th>Notes</th>
-        <th>Tickets</th>
         <th>Location</th>
+        <th>Tickets</th>
         <th>Calendar</th>
       </tr>
     </thead>
